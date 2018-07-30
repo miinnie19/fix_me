@@ -1,26 +1,34 @@
-package wethinkcode.Model;
+package wethinkcode.model;
 
 public class BrokerModel
 {
-    private int Id;
-    private int BrokerId;
+    private int _id;
+    private int _brokerId;
+    private int _instrumentId;
 
 
 
     public int getId()
     {
-        return Id;
+        return _id;
     }
 
     public void setBrokerId(int brokerId)
     {
-        BrokerId = brokerId;
+        _brokerId = brokerId;
     }
 
     public int getBrokerId()
     {
-        return BrokerId;
+        return _brokerId;
     }
 
 
+    public int get_instrumentId() {
+        return _instrumentId;
+    }
+
+    public void set_instrumentId(int _instrumentId) {
+        this._instrumentId = _instrumentId;
+    }
 }

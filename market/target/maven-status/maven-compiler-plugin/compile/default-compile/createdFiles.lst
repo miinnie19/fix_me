@@ -1,1 +1,4 @@
+wethinkcode/model/InstrumentModel.class
 wethinkcode/App.class
+wethinkcode/model/MarketModel.class
+wethinkcode/NonBlockingMarket.class

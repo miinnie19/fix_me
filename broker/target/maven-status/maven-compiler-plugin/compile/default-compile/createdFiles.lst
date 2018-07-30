@@ -1,1 +1,3 @@
 wethinkcode/App.class
+wethinkcode/model/BrokerModel.class
+wethinkcode/NonBlockingBroker.class

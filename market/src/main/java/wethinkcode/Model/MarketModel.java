@@ -1,47 +1,43 @@
-package wethinkcode.Model;
+package wethinkcode.model;
 
 public class MarketModel
 {
-    private int Id;
-    private int MarketId;
-    private String Market;
-    private String MarketType;
-    private String Intrument;
+    private int     _id;
+    private int     _marketId;
+    private String  _market;
+    private String  _marketType;
+    private String  _instrumentID;
 
 
-    public int getId() {
-        return Id;
+    public int get_id() {
+        return _id;
     }
 
-    public int getMarketId() {
-        return MarketId;
+    public int get_marketId() {
+        return _marketId;
     }
 
-    public void setMarketId(int marketId) {
-        MarketId = marketId;
+    public String get_market() {
+        return _market;
     }
 
-    public String getMarket() {
-        return Market;
+    public void set_market(String market) {
+        this._market = market;
     }
 
-    public void setMarket(String market) {
-        Market = market;
+    public String get_marketType() {
+        return _marketType;
     }
 
-    public String getMarketType() {
-        return MarketType;
+    public void set_marketType(String marketType) {
+        this._marketType = marketType;
     }
 
-    public void setMarketType(String marketType) {
-        MarketType = marketType;
+    public String get_intrumentID() {
+        return _instrumentID;
     }
 
-    public String getIntrument() {
-        return Intrument;
-    }
-
-    public void setIntrument(String intrument) {
-        Intrument = intrument;
+    public void set_intrumentID(String instrumentID) {
+        this._instrumentID = instrumentID;
     }
 }
