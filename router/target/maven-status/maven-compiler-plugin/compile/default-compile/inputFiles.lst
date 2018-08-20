@@ -1,10 +1,5 @@
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/enums/MessageTypes.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/messages/FixMessages.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/messages/BuyMessages.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/App.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/models/MessageModel.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/server/NonBlockingServer.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/models/SocketModel.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/interfaces/IMessage.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/config/Config.java
-/goinfre/mnaidoo/Desktop/the_fix/router/src/main/java/wethinkcode/messages/SellMessages.java
+/goinfre/mnaidoo/Desktop/fix_me/router/src/main/java/wethinkcode/config/Config.java
+/goinfre/mnaidoo/Desktop/fix_me/router/src/main/java/wethinkcode/server/NonBlockingServer.java
+/goinfre/mnaidoo/Desktop/fix_me/router/src/main/java/wethinkcode/models/MessageModel.java
+/goinfre/mnaidoo/Desktop/fix_me/router/src/main/java/wethinkcode/models/SocketModel.java
+/goinfre/mnaidoo/Desktop/fix_me/router/src/main/java/wethinkcode/App.java

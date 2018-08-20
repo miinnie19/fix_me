@@ -2,12 +2,26 @@ package wethinkcode.model;
 
 public class InstrumentModel
 {
-    private int _id;
+    protected Long _id;
+    private static Long _idCounter = 0L;
     private int _price;
     private int _quantity;
-    private int _instrumentType;
+    private String _instrumentName;
 
-    public int get_id() {
+    public InstrumentModel(String instrumentname, int quantity, int price)
+    {
+        this._id = nextId();
+        this._instrumentName = instrumentname;
+        this._quantity  = quantity;
+        this._price = price;
+    }
+
+    private Long nextId() 
+    {
+        return (++_idCounter);    
+    }
+
+    public Long get_id() {
         return _id;
     }
 
@@ -27,11 +41,7 @@ public class InstrumentModel
         this._quantity = quantity;
     }
 
-    public int get_instrumentType() {
-        return _instrumentType;
-    }
-
-    public void set_instrumentType(int instrumentType) {
-        this._instrumentType = instrumentType;
+    public String get_Name() {
+        return _instrumentName;
     }
 }

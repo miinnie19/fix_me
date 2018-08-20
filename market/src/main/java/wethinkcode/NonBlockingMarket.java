@@ -1,71 +1,59 @@
 package wethinkcode;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.Iterator;
-import java.util.Set;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.util.*;
 
+import wethinkcode.config.Config;
+import wethinkcode.utils.*;
+import wethinkcode.business_logic.*;
+import wethinkcode.model.*;
 
 public class NonBlockingMarket
 {
-    private BufferedReader userInputReader = null;
     private SocketChannel socketChannel;
     private Selector selector;
-    private int _portNumber;
-    private String _address = "127.0.0.1";
-    private static String _message = null;
+    private static String _response;
+    private Logic logic;
+    private static List<InstrumentModel> _instrumentList;
 
-    public NonBlockingMarket(String address, int port)
+
+    public NonBlockingMarket()
     {
         try {
-            this._address = address;
-            this._portNumber = port;
             this.init();
-        } catch (Exception exc) {
+        } catch (Exception exc)
+        {
             System.out.println(this.getClass().getSimpleName() + " [Exception]: " + exc.getMessage());
         }
     }
 
     private void init() throws Exception
     {
-        InetAddress inetAddress = InetAddress.getByName(this._address);
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, this._portNumber);
+        _instrumentList =  CreateInstruments.createInstrumentList();
+        InetAddress inetAddress = InetAddress.getByName(Config.SERVER_ADDRESS);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, Config.SERVER_PORT);
         selector = Selector.open();
         socketChannel = SocketChannel.open();
 
         socketChannel.configureBlocking(false);
         socketChannel.connect(inetSocketAddress);
-        // int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE;
-        int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
-        socketChannel.register(selector, operations);
-        this.userInputReader = new BufferedReader(new InputStreamReader(System.in));
+        socketChannel.register(selector, (SelectionKey.OP_CONNECT | SelectionKey.OP_READ));
 
         while (true)
         {
-            // if (selector.select() > 0)
             if (selector.selectNow() > 0)
             {
-                boolean isDone = processReadySet(selector.selectedKeys());
+                boolean isDone = processKeys(selector.selectedKeys());
                 if (isDone == true)
-                {
                     break ;
-                }
             }
-            // socketChannel.close();
         }
     }
 
-    private boolean processReadySet(Set<SelectionKey> readySet) throws Exception
+    private boolean processKeys(Set<SelectionKey> readySet) throws Exception
     {
         Iterator<SelectionKey> iterator = readySet.iterator();
 
@@ -76,73 +64,44 @@ public class NonBlockingMarket
 
             if (key.isConnectable())
             {
-                boolean connected = processConnection(key);
-
+                boolean connected = SocketTools.ProcessConnection(key);
+                DisplayMarketData.Print(_instrumentList);
                 if (connected == false)
-                {
                     return (true);
-                }
             }
             if (key.isReadable())
             {
-                String message = processRead(key);
+                String message = SocketTools.ProcessRead(key);
                 String address = socketChannel.getLocalAddress().toString();
-                String[] fixedMessage = message.split("#");
+                String[] fixedMessage = message.split("\\|");
 
                 if (fixedMessage != null && fixedMessage.length > 0 && fixedMessage[0].equals(address.split(":")[1]))
                 {
-                    System.out.println("[Server]: " + message);
-                    _message = "Something to say...";
+                    System.out.println("[Broker]: " + message);
+                    logic = new Logic(fixedMessage[1], fixedMessage[2], Integer.parseInt(fixedMessage[3]), Integer.parseInt(fixedMessage[4]), _instrumentList);
+                    _response = logic.doLogic(message);
                     socketChannel.register(selector, SelectionKey.OP_WRITE);
                 }
             }
             if (key.isWritable())
             {
-                // System.out.println("Enter message (\"exit\" to quit)");
-                // String userInput = this.userInputReader.readLine();
-                String userInput = _message;//"Market is that and that...";
+                String response = _response;
 
-                if (userInput != null && userInput.length() > 0)
+                if (response != null && response.length() > 0)
                 {
                     SocketChannel socketChannel = (SocketChannel) key.channel();
-                    ByteBuffer byteBuffer = ByteBuffer.wrap(userInput.getBytes());
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(response.getBytes());
                     socketChannel.write(byteBuffer);
                     socketChannel.register(selector, SelectionKey.OP_READ);
-                    _message = null;
+                    //_response = null;
                 }
-                if (userInput != null && userInput.equalsIgnoreCase("exit"))
+                /*if (userInput != null && userInput.equalsIgnoreCase("exit"))
                 {
                     socketChannel.close();
                     return (true);
-                }
+                }*/
             }
         }
         return (false);
-    }
-
-    private boolean processConnection(SelectionKey key) throws Exception
-    {
-        SocketChannel serverSocketChannel = (SocketChannel) key.channel();
-
-        while (serverSocketChannel.isConnectionPending())
-        {
-            serverSocketChannel.finishConnect();
-        }
-        System.out.println("Client Running: "+ this.socketChannel.getLocalAddress());
-        System.out.println("Client Connected to: " + serverSocketChannel.getRemoteAddress() + "\n");
-        return (true);
-    }
-
-    private String processRead(SelectionKey key) throws Exception
-    {
-        SocketChannel socketChannel = (SocketChannel)key.channel();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-        socketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        Charset charset = Charset.forName("UTF-8");
-        CharsetDecoder charsetDecoder = charset.newDecoder();
-        CharBuffer charBuffer = charsetDecoder.decode(byteBuffer);
-        String message = charBuffer.toString();
-        return (message);
     }
 }

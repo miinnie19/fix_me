@@ -1,4 +1,8 @@
-wethinkcode/model/InstrumentModel.class
 wethinkcode/App.class
-wethinkcode/model/MarketModel.class
+wethinkcode/business_logic/Logic.class
 wethinkcode/NonBlockingMarket.class
+wethinkcode/model/InstrumentModel.class
+wethinkcode/config/Config.class
+wethinkcode/model/MarketModel.class
+wethinkcode/utils/DisplayMarketData.class
+wethinkcode/utils/CreateInstruments.class

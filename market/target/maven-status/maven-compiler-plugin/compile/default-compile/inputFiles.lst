@@ -1,4 +1,8 @@
-/goinfre/mnaidoo/Desktop/the_fix/market/src/main/java/wethinkcode/NonBlockingMarket.java
-/goinfre/mnaidoo/Desktop/the_fix/market/src/main/java/wethinkcode/App.java
-/goinfre/mnaidoo/Desktop/the_fix/market/src/main/java/wethinkcode/model/MarketModel.java
-/goinfre/mnaidoo/Desktop/the_fix/market/src/main/java/wethinkcode/model/InstrumentModel.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/App.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/utils/CreateInstruments.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/business_logic/Logic.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/NonBlockingMarket.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/utils/DisplayMarketData.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/config/Config.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/model/InstrumentModel.java
+/goinfre/mnaidoo/Desktop/fix_me/market/src/main/java/wethinkcode/model/MarketModel.java

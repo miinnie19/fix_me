@@ -6,7 +6,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -14,56 +13,55 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Iterator;
 import java.util.Set;
-
+import wethinkcode.hashing.*;
+import wethinkcode.utils.Colours;
+import wethinkcode.utils.SocketTools;
+import wethinkcode.utils.Validators;
+import wethinkcode.utils.generatechecksum;
+import wethinkcode.config.Config;
 
 public class NonBlockingBroker
 {
     private BufferedReader userInputReader = null;
     private SocketChannel socketChannel;
     private Selector selector;
-    private int _portNumber;
-    private String _address = "127.0.0.1";
 
-    public NonBlockingBroker(String address, int port)
+    public NonBlockingBroker()
     {
         try {
-            this._address = address;
-            this._portNumber = port;
             this.init();
-        } catch (Exception exc) {
+        } 
+        catch (Exception exc)
+        {
+            exc.printStackTrace();
             System.out.println(this.getClass().getSimpleName() + " [Exception]: " + exc.getMessage());
         }
     }
 
     private void init() throws Exception
     {
-        InetAddress inetAddress = InetAddress.getByName(this._address);
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, this._portNumber);
+        InetAddress inetAddress = InetAddress.getByName(Config.SERVER_ADDRESS);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, Config.SERVER_PORT);
         selector = Selector.open();
         socketChannel = SocketChannel.open();
 
         socketChannel.configureBlocking(false);
         socketChannel.connect(inetSocketAddress);
-        int operations = SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE;
-        socketChannel.register(selector, operations);
+        socketChannel.register(selector, (SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE));
         this.userInputReader = new BufferedReader(new InputStreamReader(System.in));
 
         while (true)
         {
-            // if (selector.select() > 0)
             if (selector.selectNow() > 0)
             {
-                boolean isDone = processReadySet(selector.selectedKeys());
+                boolean isDone = processKeys(selector.selectedKeys());
                 if (isDone == true)
-                {
                     break ;
-                }
             }
-            // socketChannel.close();
         }
     }
 
-    private boolean processReadySet(Set<SelectionKey> readySet) throws Exception
+    private boolean processKeys(Set<SelectionKey> readySet) throws Exception
     {
         Iterator<SelectionKey> iterator = readySet.iterator();
 
@@ -74,30 +72,34 @@ public class NonBlockingBroker
 
             if (key.isConnectable())
             {
-                boolean connected = processConnection(key);
+                boolean connected = SocketTools.ProcessConnection(key);
 
                 if (connected == false)
-                {
                     return (true);
-                }
             }
             if (key.isReadable())
             {
-                String message = processRead(key);
-                System.out.println("[Server]: " + message);
+                String message = SocketTools.ProcessRead(key);
+                System.out.println("[Market]: " + message);
                 socketChannel.register(selector, SelectionKey.OP_WRITE);
             }
             if (key.isWritable())
             {
-                System.out.println("Enter message (\"exit\" to quit)");
+                System.out.print(Colours.ANSI_PURPLE + "Enter Fix message: " + Colours.ANSI_RESET + "[MARKET[ID] | BUY or SELL |  INSTRUMENT | QUANTITY | PRICE]" + Colours.ANSI_CYAN + "\n-> " + Colours.ANSI_RESET);
                 String userInput = this.userInputReader.readLine();
-
+                
                 if (userInput != null && userInput.length() > 0)
                 {
-                    SocketChannel socketChannel = (SocketChannel) key.channel();
-                    ByteBuffer byteBuffer = ByteBuffer.wrap(userInput.getBytes());
-                    socketChannel.write(byteBuffer);
-                    socketChannel.register(selector, SelectionKey.OP_READ);
+                    if (Validators.ValidateMessage(userInput) == true)
+                    {
+                        //userInput =  generatechecksum.generateChecksum(userInput);
+                        SocketChannel socketChannel = (SocketChannel) key.channel();
+                        ByteBuffer byteBuffer = ByteBuffer.wrap(userInput.getBytes());
+                        socketChannel.write(byteBuffer);
+                        socketChannel.register(selector, SelectionKey.OP_READ);
+                    }
+                    else 
+                        System.out.println(Colours.ANSI_RED + "MESSAGE BADLY FORMATTED." + Colours.ANSI_RESET);
                 }
                 if (userInput != null && userInput.equalsIgnoreCase("exit"))
                 {
@@ -107,31 +109,5 @@ public class NonBlockingBroker
             }
         }
         return (false);
-    }
-
-    private boolean processConnection(SelectionKey key) throws Exception
-    {
-        SocketChannel serverSocketChannel = (SocketChannel) key.channel();
-
-        while (serverSocketChannel.isConnectionPending())
-        {
-            serverSocketChannel.finishConnect();
-        }
-        System.out.println("Client Running: "+ this.socketChannel.getLocalAddress());
-        System.out.println("Client Connected to: " + serverSocketChannel.getRemoteAddress() + "\n");
-        return (true);
-    }
-
-    private String processRead(SelectionKey key) throws Exception
-    {
-        SocketChannel socketChannel = (SocketChannel)key.channel();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-        socketChannel.read(byteBuffer);
-        byteBuffer.flip();
-        Charset charset = Charset.forName("UTF-8");
-        CharsetDecoder charsetDecoder = charset.newDecoder();
-        CharBuffer charBuffer = charsetDecoder.decode(byteBuffer);
-        String message = charBuffer.toString();
-        return (message);
     }
 }

@@ -1,10 +1,5 @@
-wethinkcode/interfaces/IMessage.class
 wethinkcode/server/NonBlockingServer.class
 wethinkcode/App.class
-wethinkcode/messages/FixMessages.class
-wethinkcode/models/SocketModel.class
-wethinkcode/enums/MessageTypes.class
 wethinkcode/config/Config.class
 wethinkcode/models/MessageModel.class
-wethinkcode/messages/BuyMessages.class
-wethinkcode/messages/SellMessages.class
+wethinkcode/models/SocketModel.class
